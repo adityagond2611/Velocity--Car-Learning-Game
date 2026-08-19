@@ -128,54 +128,54 @@ public class CameraController : MonoBehaviour
     [Header("Smooth Damping & Follow Dynamics")]
     [Tooltip("Position smoothing time (seconds). Lower = snappier, higher = smoother.")]
     [Range(0.01f, 0.5f)]
-    [SerializeField] private float positionSmoothTime = 0.10f;
+    [SerializeField] private float positionSmoothTime = 0.02f;
 
     [Tooltip("Horizontal rotation (yaw) smoothing time.")]
     [Range(0.01f, 0.5f)]
-    [SerializeField] private float yawSmoothTime = 0.08f;
+    [SerializeField] private float yawSmoothTime = 0.03f;
 
     [Tooltip("Vertical rotation (pitch) smoothing time.")]
     [Range(0.01f, 0.5f)]
-    [SerializeField] private float pitchSmoothTime = 0.12f;
+    [SerializeField] private float pitchSmoothTime = 0.03f;
 
     [Tooltip("Weight of velocity direction vs chassis forward during drifts/slides (0 = chassis only, 1 = velocity only).")]
     [Range(0f, 1f)]
-    [SerializeField] private float velocityHeadingWeight = 0.50f;
+    [SerializeField] private float velocityHeadingWeight = 0.30f;
 
     [Tooltip("Minimum speed (m/s) before velocity heading blending kicks in.")]
     [SerializeField] private float minSpeedForVelocityHeading = 2.0f;
 
     [Header("Dynamic Speed FOV & Distance")]
     [Tooltip("Dynamically widen FOV and extend distance as speed increases.")]
-    [SerializeField] private bool enableDynamicFOV = true;
+    [SerializeField] private bool enableDynamicFOV = false;
 
     [Tooltip("Speed in km/h at which maximum dynamic FOV/distance is reached.")]
     [SerializeField] private float topSpeedReferenceKmh = 140f;
 
     [Tooltip("Maximum additional distance pulled back at top speed.")]
-    [SerializeField] private float maxSpeedDistanceOffset = 1.0f;
+    [SerializeField] private float maxSpeedDistanceOffset = 0.0f;
 
     [Tooltip("FOV smoothing time.")]
     [SerializeField] private float fovSmoothTime = 0.20f;
 
     [Header("Acceleration Kickback & Braking Dive")]
     [Tooltip("Minimum m/s² acceleration spike to trigger kickback effect.")]
-    [SerializeField] private float accelSpikeThreshold = 7.0f;
+    [SerializeField] private float accelSpikeThreshold = 999.0f;
 
     [Tooltip("How far back (in meters) the camera kicks on hard acceleration.")]
-    [SerializeField] private float kickDistance = 1.2f;
+    [SerializeField] private float kickDistance = 0.0f;
 
     [Tooltip("Downward pitch angle kick (degrees) on hard acceleration.")]
-    [SerializeField] private float kickPitchAngle = 1.5f;
+    [SerializeField] private float kickPitchAngle = 0.0f;
 
     [Tooltip("Time (in seconds) for camera kick to ease back to rest position.")]
-    [SerializeField] private float returnTime = 0.5f;
+    [SerializeField] private float returnTime = 0.1f;
 
     [Tooltip("Minimum seconds between consecutive kicks.")]
     [SerializeField] private float kickCooldown = 0.35f;
 
     [Tooltip("How far forward (in meters) the camera dives on heavy braking.")]
-    [SerializeField] private float brakeDiveDistance = 0.5f;
+    [SerializeField] private float brakeDiveDistance = 0.0f;
 
     [Header("Smart Reverse View")]
     [Tooltip("Automatically orient camera backward when car is reversing.")]
@@ -205,7 +205,7 @@ public class CameraController : MonoBehaviour
 
     [Header("High-Speed Micro Shake")]
     [Tooltip("Enable subtle vibration at high speeds.")]
-    [SerializeField] private bool enableHighSpeedShake = true;
+    [SerializeField] private bool enableHighSpeedShake = false;
 
     [Tooltip("Speed (km/h) above which camera shake begins.")]
     [SerializeField] private float shakeMinSpeedKmh = 65f;
@@ -700,20 +700,14 @@ public class CameraController : MonoBehaviour
         // Combined Final Yaw with Mouse Orbit
         float totalYaw = currentYaw + mouseOrbitYaw;
 
-        // 3. Compute Dynamic Follow Distance & Height with Zoom Offset
+        // 3. Compute Follow Distance & Height with Zoom Offset (Constant distance, no speed pull-back)
         float speedFactor = Mathf.Clamp01(speedKmh / topSpeedReferenceKmh);
         float baseDistWithZoom = Mathf.Clamp(profile.distance + userZoomOffset, minZoomDistance, maxZoomDistance);
-        float dynamicDistance = baseDistWithZoom + (speedFactor * maxSpeedDistanceOffset) + currentKickOffset;
+        float dynamicDistance = baseDistWithZoom;
 
-        // Apply braking dive
-        if (carScript != null && carScript.IsBraking && speedKmh > 10f)
-        {
-            dynamicDistance = Mathf.Max(minZoomDistance, dynamicDistance - brakeDiveDistance);
-        }
-
-        // 4. Focus / LookAt Target Point
+        // 4. Focus / LookAt Target Point (Constant look-ahead)
         float lookAhead = isReversing ? -profile.lookAhead * 0.4f : profile.lookAhead;
-        Vector3 focusPoint = carPos + Vector3.up * profile.lookAtHeight + desiredHeading * (lookAhead * (0.5f + 0.5f * speedFactor));
+        Vector3 focusPoint = carPos + Vector3.up * profile.lookAtHeight + desiredHeading * lookAhead;
 
         // 5. Calculate Desired Camera Position from Orbit Rotation
         Quaternion orbitRotation = Quaternion.Euler(mouseOrbitPitch, totalYaw, 0f);
@@ -805,8 +799,11 @@ public class CameraController : MonoBehaviour
         {
             float targetFOV = Mathf.Lerp(profile.baseFOV, profile.maxFOV, speedFactor);
             currentFOV = Mathf.SmoothDamp(currentFOV, targetFOV, ref fovVelocity, fovSmoothTime, float.MaxValue, deltaTime);
-
             ApplyFOV(currentFOV);
+        }
+        else
+        {
+            ApplyFOV(profile.baseFOV);
         }
     }
 

@@ -1174,6 +1174,8 @@ GameObject:
   - component: {fileID: 330585544}
   - component: {fileID: 330585547}
   - component: {fileID: 330585548}
+  - component: {fileID: 330585549}
+  - component: {fileID: 330585550}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -1248,12 +1250,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 330585543}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.05145571, y: 0.7052322, z: -0.05145572, w: 0.7052321}
-  m_LocalPosition: {x: -36.02, y: 2.42, z: -10.5}
+  m_LocalRotation: {x: 0.072769366, y: 0.00000008940696, z: -0.0000000074505797, w: 0.9973488}
+  m_LocalPosition: {x: 0, y: 1.97, z: -5.020001}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 0}
+  m_Father: {fileID: 2806714669379935077}
   m_LocalEulerAnglesHint: {x: 15.789, y: 0, z: 0}
 --- !u!114 &330585547
 MonoBehaviour:
@@ -1331,6 +1333,113 @@ MonoBehaviour:
       m_PostInfinity: 2
       m_RotationOrder: 4
   CustomBlends: {fileID: 0}
+--- !u!114 &330585549
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 330585543}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 35487f57b95525f4c96e32bd696102e8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CameraController
+  target: {fileID: 2806714669379935077}
+  carRigidbody: {fileID: 7514724141743012557}
+  carScript: {fileID: 2060824345}
+  enableMouseLook: 1
+  mouseActivation: 1
+  mouseSensitivityX: 2.5
+  mouseSensitivityY: 2
+  invertMouseY: 0
+  minPitchAngle: -15
+  maxPitchAngle: 75
+  enableScrollZoom: 1
+  scrollZoomSensitivity: 1.2
+  minZoomDistance: 2.5
+  maxZoomDistance: 9.1
+  autoRecenterDelay: 1.5
+  autoRecenterSmoothTime: 0.3
+  autoRecenterOnDrive: 1
+  cameraProfiles:
+  - profileName: Chase (Default)
+    distance: 5.2
+    height: 2.1
+    lookAtHeight: 1
+    lookAhead: 2.5
+    baseFOV: 62
+    maxFOV: 76
+  - profileName: Close Chase
+    distance: 4
+    height: 1.6
+    lookAtHeight: 0.9
+    lookAhead: 2
+    baseFOV: 65
+    maxFOV: 80
+  - profileName: Far Chase
+    distance: 6.8
+    height: 2.8
+    lookAtHeight: 1.1
+    lookAhead: 3
+    baseFOV: 58
+    maxFOV: 72
+  - profileName: Hood / Bumper
+    distance: 1.8
+    height: 1.1
+    lookAtHeight: 0.8
+    lookAhead: 5
+    baseFOV: 70
+    maxFOV: 85
+  activeProfileIndex: 1
+  positionSmoothTime: 0.5
+  yawSmoothTime: 0.08
+  pitchSmoothTime: 0.12
+  velocityHeadingWeight: 0.5
+  minSpeedForVelocityHeading: 2
+  enableDynamicFOV: 1
+  topSpeedReferenceKmh: 140
+  maxSpeedDistanceOffset: 1
+  fovSmoothTime: 0.2
+  accelSpikeThreshold: 7
+  kickDistance: 1.2
+  kickPitchAngle: 1.5
+  returnTime: 1.08
+  kickCooldown: 0.35
+  brakeDiveDistance: 0.5
+  enableSmartReverse: 1
+  reverseSpeedThreshold: 1.5
+  reverseTransitionTime: 0.3
+  enableCollisionAvoidance: 1
+  collisionRadius: 0.22
+  collisionLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  minCollisionDistance: 0.8
+  collisionReturnSmoothTime: 0.15
+  enableHighSpeedShake: 1
+  shakeMinSpeedKmh: 65
+  maxShakeIntensity: 0.035
+  shakeFrequency: 22
+  cinemachineCamera: {fileID: 706000002}
+  cinemachineBrain: {fileID: 330585548}
+  teleportThreshold: 8
+  showDebugInfo: 1
+--- !u!114 &330585550
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 330585543}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f7dc3cdb19b6f5b4188805df6e5bfddb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CameraFollow
+  target: {fileID: 2806714669379935077}
+  offset: {x: 0, y: 3.5, z: -7}
+  pitchAngle: 12
 --- !u!1 &376278723
 GameObject:
   m_ObjectHideFlags: 0
@@ -4469,6 +4578,7 @@ Canvas:
   m_OverridePixelPerfect: 0
   m_SortingBucketNormalizedSize: 0
   m_VertexColorAlwaysGammaSpace: 0
+  m_UseReflectionProbes: 0
   m_AdditionalShaderChannelsFlag: 25
   m_UpdateRectTransformForStandalone: 0
   m_SortingLayerID: 0
@@ -4909,6 +5019,7 @@ RectTransform:
   - {fileID: 748450953}
   - {fileID: 196648724}
   - {fileID: 1772701537}
+  - {fileID: 1357460689}
   m_Father: {fileID: 936077883}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -5234,21 +5345,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!115 &1426389370
-MonoScript:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_Name: 
-  serializedVersion: 7
-  m_DefaultReferences: {}
-  m_Icon: {fileID: 0}
-  m_Type: 0
-  m_ExecutionOrder: 0
-  m_ClassName: CheckpointTrigger
-  m_Namespace: 
-  m_AssemblyName: Assembly-CSharp
 --- !u!1 &1490215629
 GameObject:
   m_ObjectHideFlags: 0
@@ -5544,6 +5640,20 @@ MonoBehaviour:
   target: {fileID: 2806714669379935077}
   carRigidbody: {fileID: 7514724141743012557}
   carScript: {fileID: 2060824345}
+  enableMouseLook: 1
+  mouseActivation: 1
+  mouseSensitivityX: 2.5
+  mouseSensitivityY: 2
+  invertMouseY: 0
+  minPitchAngle: -15
+  maxPitchAngle: 75
+  enableScrollZoom: 1
+  scrollZoomSensitivity: 1.2
+  minZoomDistance: 2.5
+  maxZoomDistance: 14
+  autoRecenterDelay: 1.5
+  autoRecenterSmoothTime: 0.3
+  autoRecenterOnDrive: 1
   cameraProfiles:
   - profileName: Chase (Default)
     distance: 5.2
@@ -5838,7 +5948,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1772701535}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 0}
+        m_TargetAssemblyTypeName: 
+        m_MethodName: 
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: 
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1772701535
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7368,6 +7490,7 @@ Transform:
   - {fileID: 1778053941886858932}
   - {fileID: 7075323475919141554}
   - {fileID: 7760310118614660225}
+  - {fileID: 330585546}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 90.843, z: 0}
 --- !u!1 &3001691314765093094
@@ -8084,7 +8207,6 @@ Transform:
 SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
-  - {fileID: 330585546}
   - {fileID: 936077883}
   - {fileID: 1038766242}
   - {fileID: 2806714669379935077}

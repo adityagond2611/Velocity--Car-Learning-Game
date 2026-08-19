@@ -120,11 +120,11 @@ public class VelocityLessonManager : MonoBehaviour
             cutsceneCamera.Priority = -10;
         }
 
-        // Set up Continue button
+        // Set up Exit button
         if (continueButton != null)
         {
             continueButton.onClick.RemoveAllListeners();
-            continueButton.onClick.AddListener(OnContinuePressed);
+            continueButton.onClick.AddListener(OnExitPressed);
         }
 
         // Ensure scoreboard CanvasGroup is set up and hidden initially
@@ -241,7 +241,7 @@ public class VelocityLessonManager : MonoBehaviour
             var btnText = continueButton.GetComponentInChildren<TextMeshProUGUI>();
             if (btnText != null)
             {
-                btnText.text = "<b>CONTINUE</b>";
+                btnText.text = "<b>EXIT</b>";
                 btnText.color = Color.white;
                 btnText.fontSize = 13f;
                 btnText.alignment = TextAlignmentOptions.Center;
@@ -707,14 +707,20 @@ public class VelocityLessonManager : MonoBehaviour
         }
     }
 
-    // ───────────────────────── Smooth Reset on Continue ─────────────────────────
+    // ───────────────────────── Exit on Button Click ─────────────────────────
+    private void OnExitPressed()
+    {
+        Debug.Log("[VelocityLesson] Exit button pressed. Quitting application.");
+#if UNITY_EDITOR
+        UnityEditor.EditorApplication.isPlaying = false;
+#else
+        Application.Quit();
+#endif
+    }
+
     private void OnContinuePressed()
     {
-        if (state == LessonState.Resetting) return;
-        state = LessonState.Resetting;
-
-        if (activeTransitionCoroutine != null) StopCoroutine(activeTransitionCoroutine);
-        activeTransitionCoroutine = StartCoroutine(SmoothResetSequence());
+        OnExitPressed();
     }
 
     private IEnumerator SmoothResetSequence()

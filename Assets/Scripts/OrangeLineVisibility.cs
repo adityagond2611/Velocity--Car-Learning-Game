@@ -57,6 +57,7 @@ public class OrangeLineVisibility : MonoBehaviour
             lineRenderer.material = overlayMaterial;
             lineRenderer.startColor = lineColor;
             lineRenderer.endColor = lineColor;
+            lineRenderer.sortingOrder = 500;
             lineRenderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
             lineRenderer.receiveShadows = false;
         }
