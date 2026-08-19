@@ -1340,7 +1340,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 330585543}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 35487f57b95525f4c96e32bd696102e8, type: 3}
   m_Name: 
@@ -5683,20 +5683,27 @@ MonoBehaviour:
     lookAhead: 5
     baseFOV: 70
     maxFOV: 85
+  - profileName: Top / Bird's Eye View
+    distance: 6
+    height: 16
+    lookAtHeight: 0.5
+    lookAhead: 0
+    baseFOV: 60
+    maxFOV: 75
   activeProfileIndex: 0
-  positionSmoothTime: 0.1
-  yawSmoothTime: 0.08
-  pitchSmoothTime: 0.12
-  velocityHeadingWeight: 0.5
+  positionSmoothTime: 0.02
+  yawSmoothTime: 0.03
+  pitchSmoothTime: 0.03
+  velocityHeadingWeight: 0.3
   minSpeedForVelocityHeading: 2
-  enableDynamicFOV: 1
+  enableDynamicFOV: 0
   topSpeedReferenceKmh: 140
-  maxSpeedDistanceOffset: 1
+  maxSpeedDistanceOffset: 0
   fovSmoothTime: 0.2
-  accelSpikeThreshold: 7
-  kickDistance: 1.2
-  kickPitchAngle: 1.5
-  returnTime: 0.5
+  accelSpikeThreshold: 18
+  kickDistance: 0.4
+  kickPitchAngle: 0.8
+  returnTime: 0.25
   kickCooldown: 0.35
   brakeDiveDistance: 0.5
   enableSmartReverse: 1

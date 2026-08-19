@@ -121,7 +121,8 @@ public class CameraController : MonoBehaviour
         new CameraProfile("Chase (Default)", 5.2f, 2.1f, 1.0f, 2.5f, 62f, 76f),
         new CameraProfile("Close Chase", 4.0f, 1.6f, 0.9f, 2.0f, 65f, 80f),
         new CameraProfile("Far Chase", 6.8f, 2.8f, 1.1f, 3.0f, 58f, 72f),
-        new CameraProfile("Hood / Bumper", 1.8f, 1.1f, 0.8f, 5.0f, 70f, 85f)
+        new CameraProfile("Hood / Bumper", 1.8f, 1.1f, 0.8f, 5.0f, 70f, 85f),
+        new CameraProfile("Top / Bird's Eye View", 6.0f, 16.0f, 0.5f, 0.0f, 60f, 75f)
     };
     [SerializeField] private int activeProfileIndex = 0;
 
@@ -299,6 +300,15 @@ public class CameraController : MonoBehaviour
 
         if (cinemachineBrain == null)
             cinemachineBrain = FindAnyObjectByType<CinemachineBrain>();
+
+        // If this component is attached to Main Camera alongside CinemachineBrain,
+        // disable this component to prevent fight between CinemachineBrain and CameraController.
+        if (GetComponent<CinemachineBrain>() != null)
+        {
+            Debug.LogWarning("[CameraController] Disabling duplicate CameraController on Main Camera (CinemachineBrain detected). CameraController will run on Cinemachine Virtual Cameras.");
+            enabled = false;
+            return;
+        }
 
         DisableConflictingCinemachineComponents();
     }
@@ -714,6 +724,13 @@ public class CameraController : MonoBehaviour
         Vector3 backVector = orbitRotation * Vector3.back;
         Vector3 desiredPos = carPos + Vector3.up * profile.height + backVector * dynamicDistance;
 
+        // Guaranteed ground height floor: Camera Y position can NEVER drop onto or below the track/ground
+        float minAllowedCameraY = carPos.y + Mathf.Max(0.75f, profile.height * 0.45f);
+        if (desiredPos.y < minAllowedCameraY)
+        {
+            desiredPos.y = minAllowedCameraY;
+        }
+
         // 6. Obstacle Collision Avoidance (Spring Arm)
         if (enableCollisionAvoidance)
         {
@@ -728,8 +745,12 @@ public class CameraController : MonoBehaviour
                 {
                     if (hit.transform != target && !hit.transform.IsChildOf(target))
                     {
-                        float safeDist = Mathf.Max(minCollisionDistance, hit.distance - 0.05f);
-                        targetMultiplier = Mathf.Clamp01(safeDist / castDist);
+                        // Ignore upward-facing ground/road surfaces (normal.y > 0.4) so track surface doesn't trap the camera
+                        if (hit.normal.y <= 0.4f)
+                        {
+                            float safeDist = Mathf.Max(minCollisionDistance, hit.distance - 0.05f);
+                            targetMultiplier = Mathf.Clamp01(safeDist / castDist);
+                        }
                     }
                 }
 
