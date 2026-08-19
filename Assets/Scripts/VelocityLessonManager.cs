@@ -105,7 +105,7 @@ public class VelocityLessonManager : MonoBehaviour
 
         // Auto-find any DisplacementLineAnimator so inspector assignments aren't required
         if (displacementLineAnimator == null)
-            displacementLineAnimator = FindObjectOfType<DisplacementLineAnimator>();
+            displacementLineAnimator = FindAnyObjectByType<DisplacementLineAnimator>();
 
         // Store car reset position & rotation
         if (carTransform != null)
@@ -146,8 +146,141 @@ public class VelocityLessonManager : MonoBehaviour
             liveTimerText.text = "Drive through the Start line!";
         }
 
+        // Configure pixel-perfect scoreboard layout matching design reference
+        ConfigureScoreboardLayout();
+
         // Setup triggers on checkpoints
         SetupCheckpointTriggers();
+    }
+
+    private void ConfigureScoreboardLayout()
+    {
+        if (scoreboardPanel == null) return;
+
+        // 1. Background image of Scoreboard: subtle transparent overlay, non-blocking
+        var bgImage = scoreboardPanel.GetComponent<UnityEngine.UI.Image>();
+        if (bgImage != null)
+        {
+            bgImage.color = new Color(0f, 0f, 0f, 0.20f);
+            bgImage.raycastTarget = false;
+        }
+
+        // 2. Top Formula Box
+        if (formulaText != null && formulaText.transform.parent != null)
+        {
+            var formulaBox = formulaText.transform.parent.GetComponent<RectTransform>();
+            if (formulaBox != null)
+            {
+                formulaBox.anchorMin = new Vector2(0.5f, 1f);
+                formulaBox.anchorMax = new Vector2(0.5f, 1f);
+                formulaBox.pivot = new Vector2(0.5f, 1f);
+                formulaBox.anchoredPosition = new Vector2(0f, -15f);
+                formulaBox.sizeDelta = new Vector2(560f, 92f);
+
+                var boxImg = formulaBox.GetComponent<UnityEngine.UI.Image>();
+                if (boxImg != null)
+                {
+                    boxImg.color = new Color(0.06f, 0.09f, 0.16f, 0.90f);
+                    boxImg.raycastTarget = false;
+                }
+            }
+
+            var fTextRt = formulaText.GetComponent<RectTransform>();
+            if (fTextRt != null)
+            {
+                fTextRt.anchorMin = Vector2.zero;
+                fTextRt.anchorMax = Vector2.one;
+                fTextRt.pivot = new Vector2(0.5f, 0.5f);
+                fTextRt.anchoredPosition = Vector2.zero;
+                fTextRt.sizeDelta = new Vector2(-16f, -8f);
+            }
+            formulaText.fontSize = 12.5f;
+            formulaText.alignment = TextAlignmentOptions.Center;
+            formulaText.raycastTarget = false;
+        }
+
+        // 3. Bottom Cards (Time, Velocity, Feedback)
+        ConfigureCard(timeCardText, new Vector2(-225f, 58f), new Vector2(215f, 62f));
+        ConfigureCard(velocityCardText, new Vector2(0f, 58f), new Vector2(215f, 62f));
+        ConfigureCard(feedbackCardText, new Vector2(225f, 58f), new Vector2(215f, 62f));
+
+        // 4. Hide redundant displacement card if separate from formula/feedback
+        if (displacementCardText != null && displacementCardText.transform.parent != null)
+        {
+            var p = displacementCardText.transform.parent.gameObject;
+            if (p != null && p != (timeCardText != null ? timeCardText.transform.parent.gameObject : null) &&
+                p != (velocityCardText != null ? velocityCardText.transform.parent.gameObject : null) &&
+                p != (feedbackCardText != null ? feedbackCardText.transform.parent.gameObject : null))
+            {
+                p.SetActive(false);
+            }
+        }
+
+        // 5. Continue Button
+        if (continueButton != null)
+        {
+            var btnRt = continueButton.GetComponent<RectTransform>();
+            if (btnRt != null)
+            {
+                btnRt.anchorMin = new Vector2(0.5f, 0f);
+                btnRt.anchorMax = new Vector2(0.5f, 0f);
+                btnRt.pivot = new Vector2(0.5f, 0f);
+                btnRt.anchoredPosition = new Vector2(0f, 16f);
+                btnRt.sizeDelta = new Vector2(170f, 32f);
+            }
+            continueButton.transform.SetAsLastSibling(); // Ensure button is topmost in hierarchy
+            continueButton.interactable = true;
+
+            var btnImg = continueButton.GetComponent<UnityEngine.UI.Image>();
+            if (btnImg != null)
+            {
+                btnImg.color = new Color(0.06f, 0.42f, 0.85f, 1.0f);
+                btnImg.raycastTarget = true;
+            }
+
+            var btnText = continueButton.GetComponentInChildren<TextMeshProUGUI>();
+            if (btnText != null)
+            {
+                btnText.text = "<b>CONTINUE</b>";
+                btnText.color = Color.white;
+                btnText.fontSize = 13f;
+                btnText.alignment = TextAlignmentOptions.Center;
+                btnText.raycastTarget = false;
+            }
+        }
+    }
+
+    private void ConfigureCard(TextMeshProUGUI tmp, Vector2 pos, Vector2 size)
+    {
+        if (tmp == null || tmp.transform.parent == null) return;
+        var parentRt = tmp.transform.parent.GetComponent<RectTransform>();
+        if (parentRt != null)
+        {
+            parentRt.anchorMin = new Vector2(0.5f, 0f);
+            parentRt.anchorMax = new Vector2(0.5f, 0f);
+            parentRt.pivot = new Vector2(0.5f, 0f);
+            parentRt.anchoredPosition = pos;
+            parentRt.sizeDelta = size;
+
+            var img = parentRt.GetComponent<UnityEngine.UI.Image>();
+            if (img != null)
+            {
+                img.color = new Color(0.08f, 0.12f, 0.20f, 0.90f);
+                img.raycastTarget = false;
+            }
+        }
+
+        var tmpRt = tmp.GetComponent<RectTransform>();
+        if (tmpRt != null)
+        {
+            tmpRt.anchorMin = Vector2.zero;
+            tmpRt.anchorMax = Vector2.one;
+            tmpRt.pivot = new Vector2(0.5f, 0.5f);
+            tmpRt.anchoredPosition = Vector2.zero;
+            tmpRt.sizeDelta = new Vector2(-16f, -10f);
+        }
+        tmp.alignment = TextAlignmentOptions.Center;
+        tmp.raycastTarget = false;
     }
 
     private void AutoFindUI()
@@ -172,27 +305,20 @@ public class VelocityLessonManager : MonoBehaviour
             for (int i = 0; i < scoreboardPanel.transform.childCount; i++)
             {
                 var child = scoreboardPanel.transform.GetChild(i);
-                switch (child.name)
-                {
-                    case "TopFormulaBox":
-                        formulaText = child.GetComponentInChildren<TextMeshProUGUI>();
-                        break;
-                    case "Card_Time":
-                        timeCardText = child.GetComponentInChildren<TextMeshProUGUI>();
-                        break;
-                    case "Card_Velocity":
-                        velocityCardText = child.GetComponentInChildren<TextMeshProUGUI>();
-                        break;
-                    case "Card_Displacement":
-                        displacementCardText = child.GetComponentInChildren<TextMeshProUGUI>();
-                        break;
-                    case "Card_Feedback":
-                        feedbackCardText = child.GetComponentInChildren<TextMeshProUGUI>();
-                        break;
-                    case "Continue_Button":
-                        continueButton = child.GetComponent<Button>();
-                        break;
-                }
+                string childName = child.name.ToLowerInvariant();
+
+                if (childName.Contains("formula") || childName.Contains("top"))
+                    formulaText = child.GetComponentInChildren<TextMeshProUGUI>();
+                else if (childName.Contains("time"))
+                    timeCardText = child.GetComponentInChildren<TextMeshProUGUI>();
+                else if (childName.Contains("velocity") || childName.Contains("speed"))
+                    velocityCardText = child.GetComponentInChildren<TextMeshProUGUI>();
+                else if (childName.Contains("displacement") || childName.Contains("dist"))
+                    displacementCardText = child.GetComponentInChildren<TextMeshProUGUI>();
+                else if (childName.Contains("feedback") || childName.Contains("result"))
+                    feedbackCardText = child.GetComponentInChildren<TextMeshProUGUI>();
+                else if (childName.Contains("continue") || childName.Contains("button"))
+                    continueButton = child.GetComponent<Button>();
             }
         }
 
@@ -249,6 +375,7 @@ public class VelocityLessonManager : MonoBehaviour
             var col = checkpointA.GetComponent<BoxCollider>();
             if (col != null) col.isTrigger = true;
         }
+
         if (checkpointB != null)
         {
             var trigger = checkpointB.gameObject.GetComponent<CheckpointTrigger>() ?? checkpointB.gameObject.AddComponent<CheckpointTrigger>();
@@ -271,6 +398,17 @@ public class VelocityLessonManager : MonoBehaviour
             {
                 liveTimerText.text = $"{elapsed:F2} s";
             }
+        }
+
+        // Maintain cursor freedom during scoreboard results screen
+        if (state == LessonState.ShowingResults)
+        {
+            if (Cursor.lockState != CursorLockMode.None || !Cursor.visible)
+            {
+                Cursor.lockState = CursorLockMode.None;
+                Cursor.visible = true;
+            }
+            CameraController.IsUIModeActive = true;
         }
     }
 
@@ -328,6 +466,11 @@ public class VelocityLessonManager : MonoBehaviour
     // ───────────────────────── Smooth Finish Sequence ─────────────────────────
     private IEnumerator SmoothFinishSequence()
     {
+        // Enable UI Mode for camera and unlock cursor so player can click UI buttons
+        CameraController.IsUIModeActive = true;
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
+
         // Immediately hide HUD elements (Time, Acceleration, Distance, Velocity, Speedometer, Map, Graph)
         hudElementsPrevActive.Clear();
         if (hudElementsToHide == null || hudElementsToHide.Count == 0)
@@ -403,7 +546,7 @@ public class VelocityLessonManager : MonoBehaviour
             // Ensure we have a DisplacementLineAnimator in the scene (auto-create if needed)
             if (displacementLineAnimator == null)
             {
-                var existing = FindObjectOfType<DisplacementLineAnimator>();
+                var existing = FindAnyObjectByType<DisplacementLineAnimator>();
                 if (existing != null) displacementLineAnimator = existing;
                 else
                 {
@@ -534,31 +677,34 @@ public class VelocityLessonManager : MonoBehaviour
             totalDistance = carScript.TotalDistanceMeters;
     }
 
-    if (liveTimerText != null)
-        liveTimerText.text = $"{deltaTime:F2} s (Finished!)";
+        ConfigureScoreboardLayout();
 
-    if (formulaText != null)
-        formulaText.text = $"VELOCITY = DISPLACEMENT ÷ TIME\n" +
-                           $"v = {displacement:F1} m ÷ {deltaTime:F2} s = <color=#00E5FF>{avgVelocity:F2} m/s</color>";
+        if (liveTimerText != null)
+            liveTimerText.text = $"{deltaTime:F2} s (Finished!)";
 
-    if (timeCardText != null)
-        timeCardText.text = $"TIME\n<size=125%><b>{deltaTime:F2} s</b></size>";
+        if (formulaText != null)
+        {
+            formulaText.lineSpacing = 4f;
+            formulaText.text =
+                $"<size=125%><b>VELOCITY CALCULATED!</b></size>\n\n" +
+                $"<size=105%><color=#94A3B8>VELOCITY</color>  =  <color=#CBD5E1><u>  DISPLACEMENT  </u></color>  =  <color=#CBD5E1><u>    {displacement:F0} m    </u></color>  =  <color=#46E059><b>{avgVelocity:F0} m/s</b></color></size>\n" +
+                $"<size=105%><color=#94A3B8>                </color>        <color=#CBD5E1>     TIME     </color>         <color=#CBD5E1>     {deltaTime:F0} s     </color></size>";
+        }
 
-    if (velocityCardText != null)
-        velocityCardText.text = $"AVERAGE VELOCITY\n<size=125%><b>{avgVelocity:F2} m/s</b></size>\n<size=85%>{avgVelocity * 3.6f:F1} km/h</size>";
+        if (timeCardText != null)
+            timeCardText.text = $"<color=#94A3B8><size=75%>TIME TAKEN</size></color>\n<size=135%><b>{deltaTime:F0} s</b></size>";
 
-    if (displacementCardText != null)
-        displacementCardText.text = $"DISPLACEMENT: {displacement:F1} m  |  DISTANCE: {totalDistance:F1} m (Track)";
+        if (velocityCardText != null)
+            velocityCardText.text = $"<color=#94A3B8><size=75%>AVERAGE VELOCITY</size></color>\n<size=135%><b>{avgVelocity:F0} m/s</b></size>";
 
-    if (feedbackCardText != null)
-    {
-        string feedback;
-        if (avgVelocity > 35f) feedback = "Legendary Speed!";
-        else if (avgVelocity > 25f) feedback = "Blazing Fast!";
-        else if (avgVelocity > 18f) feedback = "Great Run!";
-        else feedback = "Good Attempt! Try Faster!";
-        feedbackCardText.text = $"FEEDBACK\n<size=115%><b>{feedback}</b></size>";
-    }
+        if (feedbackCardText != null)
+        {
+            string header = "WELL DONE!";
+            string desc = "You grasped the concept of velocity!";
+            if (avgVelocity > 35f) { header = "EXCELLENT!"; desc = "Blazing speed! Velocity mastered!"; }
+            else if (avgVelocity < 12f) { header = "GOOD EFFORT!"; desc = "You completed the run! Try faster next time!"; }
+            feedbackCardText.text = $"<size=95%><b>{header}</b></size>\n<size=75%><color=#CBD5E1>{desc}</color></size>";
+        }
     }
 
     // ───────────────────────── Smooth Reset on Continue ─────────────────────────
@@ -626,6 +772,7 @@ public class VelocityLessonManager : MonoBehaviour
         {
             carTransform.position = carResetPosition;
             carTransform.rotation = carResetRotation;
+            FindAnyObjectByType<CameraController>()?.SnapToTarget();
         }
 
         var wheels = carTransform != null ? carTransform.GetComponentsInChildren<WheelCollider>() : new WheelCollider[0];
@@ -638,40 +785,17 @@ public class VelocityLessonManager : MonoBehaviour
         // Wait for camera to finish smooth return blend
         yield return new WaitForSeconds(1.0f);
 
-        // Re-enable player car controls
+        // Re-enable player car controls and camera mouse lock
         var carScript = carTransform != null ? carTransform.GetComponent<CarScript>() : null;
         if (carScript != null) carScript.enabled = true;
+
+        CameraController.IsUIModeActive = false;
 
         if (liveTimerText != null)
             liveTimerText.text = "Drive through the Start line!";
 
         state = LessonState.WaitingForStart;
         Debug.Log("[VelocityLesson] Smooth Reset Complete! Ready for next run.");
-    }
-}
-
-// ───────────────────────── Checkpoint Types ─────────────────────────
-public enum CheckpointType { Start, Finish }
-
-/// <summary>
-/// Attach to a checkpoint GameObject with a trigger collider.
-/// Forwards OnTriggerEnter events to the VelocityLessonManager.
-/// </summary>
-public class CheckpointTrigger : MonoBehaviour
-{
-    private VelocityLessonManager manager;
-    private CheckpointType checkpointType;
-
-    public void Initialize(VelocityLessonManager mgr, CheckpointType type)
-    {
-        manager = mgr;
-        checkpointType = type;
-    }
-
-    private void OnTriggerEnter(Collider other)
-    {
-        if (manager != null)
-            manager.OnCheckpointEntered(checkpointType, other);
     }
 }
 

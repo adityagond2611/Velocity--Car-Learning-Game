@@ -2172,17 +2172,17 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 638786554}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: 0.7071068, y: -0, z: -0, w: 0.7071068}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
+  m_LocalScale: {x: 7, y: 7, z: 7}
+  m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 1357460689}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: -20, y: -8}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0, y: 18}
+  m_SizeDelta: {x: 20, y: 5}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &638786556
 CanvasRenderer:
@@ -4445,7 +4445,7 @@ MonoBehaviour:
   m_ScaleFactor: 1
   m_ReferenceResolution: {x: 800, y: 600}
   m_ScreenMatchMode: 0
-  m_MatchWidthOrHeight: 0
+  m_MatchWidthOrHeight: 0.69
   m_PhysicalUnit: 3
   m_FallbackScreenDPI: 96
   m_DefaultSpriteDPI: 96
@@ -4469,6 +4469,7 @@ Canvas:
   m_OverridePixelPerfect: 0
   m_SortingBucketNormalizedSize: 0
   m_VertexColorAlwaysGammaSpace: 0
+  m_UseReflectionProbes: 0
   m_AdditionalShaderChannelsFlag: 25
   m_UpdateRectTransformForStandalone: 0
   m_SortingLayerID: 0
@@ -4909,6 +4910,7 @@ RectTransform:
   - {fileID: 748450953}
   - {fileID: 196648724}
   - {fileID: 1772701537}
+  - {fileID: 1357460689}
   m_Father: {fileID: 936077883}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -5234,21 +5236,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!115 &1426389370
-MonoScript:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_Name: 
-  serializedVersion: 7
-  m_DefaultReferences: {}
-  m_Icon: {fileID: 0}
-  m_Type: 0
-  m_ExecutionOrder: 0
-  m_ClassName: CheckpointTrigger
-  m_Namespace: 
-  m_AssemblyName: Assembly-CSharp
 --- !u!1 &1490215629
 GameObject:
   m_ObjectHideFlags: 0
@@ -5544,6 +5531,20 @@ MonoBehaviour:
   target: {fileID: 2806714669379935077}
   carRigidbody: {fileID: 7514724141743012557}
   carScript: {fileID: 2060824345}
+  enableMouseLook: 1
+  mouseActivation: 1
+  mouseSensitivityX: 2.5
+  mouseSensitivityY: 2
+  invertMouseY: 0
+  minPitchAngle: -15
+  maxPitchAngle: 75
+  enableScrollZoom: 1
+  scrollZoomSensitivity: 1.2
+  minZoomDistance: 2.5
+  maxZoomDistance: 14
+  autoRecenterDelay: 1.5
+  autoRecenterSmoothTime: 0.3
+  autoRecenterOnDrive: 1
   cameraProfiles:
   - profileName: Chase (Default)
     distance: 5.2
