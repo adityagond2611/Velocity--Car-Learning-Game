@@ -44,6 +44,11 @@ public class DisplacementLineAnimator : MonoBehaviour
     [Tooltip("Base font size for the DISPLACEMENT measurement.")]
     [SerializeField] private float displacementFontSize = 9.0f;
 
+    [Header("Audio Settings")]
+    [Tooltip("Audio clip played when the displacement line animation plays.")]
+    [SerializeField] private AudioClip voiceoverClip;
+    [SerializeField] private AudioSource audioSource;
+
     // Component References
     public LineRenderer lineRenderer { get; private set; }
     public bool IsAnimating { get; private set; } = false;
@@ -61,6 +66,41 @@ public class DisplacementLineAnimator : MonoBehaviour
     {
         SetupMainLineRenderer();
         SetupTickRenderers();
+        SetupAudioSource();
+    }
+
+    public void SetupAudioSource()
+    {
+        if (audioSource == null)
+            audioSource = GetComponent<AudioSource>();
+        if (audioSource == null)
+            audioSource = gameObject.AddComponent<AudioSource>();
+
+        audioSource.playOnAwake = false;
+        audioSource.spatialBlend = 0f;
+
+        if (voiceoverClip == null)
+        {
+            voiceoverClip = Resources.Load<AudioClip>("DisplacementVoiceover");
+        }
+    }
+
+    public void PlayVoiceover()
+    {
+        SetupAudioSource();
+        if (audioSource != null && voiceoverClip != null)
+        {
+            audioSource.clip = voiceoverClip;
+            audioSource.Play();
+        }
+    }
+
+    public void StopVoiceover()
+    {
+        if (audioSource != null && audioSource.isPlaying)
+        {
+            audioSource.Stop();
+        }
     }
 
     private void SetupMainLineRenderer()
@@ -125,6 +165,7 @@ public class DisplacementLineAnimator : MonoBehaviour
             yield break;
 
         IsAnimating = true;
+        PlayVoiceover();
 
         Vector3 aPos = pointA.position + Vector3.up * verticalOffset;
         Vector3 bPos = pointB.position + Vector3.up * verticalOffset;
@@ -324,6 +365,7 @@ public class DisplacementLineAnimator : MonoBehaviour
 
     public void ClearLine()
     {
+        StopVoiceover();
         if (lineRenderer != null) lineRenderer.enabled = false;
         if (startTickRenderer != null) startTickRenderer.enabled = false;
         if (endTickRenderer != null) endTickRenderer.enabled = false;

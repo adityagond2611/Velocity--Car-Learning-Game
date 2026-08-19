@@ -574,6 +574,11 @@ public class VelocityLessonManager : MonoBehaviour
                 indicatorImage.gameObject.SetActive(true);
                 indicatorImage.color = Color.red;
 
+                if (displacementLineAnimator != null)
+                {
+                    displacementLineAnimator.PlayVoiceover();
+                }
+
                 // Create a small UI label in the scoreboard panel to show the distance text during the 5s
                 if (indicatorDisplayText == null && scoreboardPanel != null)
                 {
